@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课堂辩论赛：物流效率与GDP比率</title>
+<style>
+  :root {
+    --pro: #2563eb; --pro-light: #dbeafe;
+    --con: #dc2626; --con-light: #fee2e2;
+    --teacher: #7c3aed; --teacher-light: #ede9fe;
+    --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --text2: #64748b;
+    --border: #e2e8f0; --radius: 16px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  body { background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px; min-height: 100vh; }
+  .hidden { display: none !important; }
+
+  .landing { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; gap: 28px; }
+  .topic-box { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; border-radius: var(--radius); padding: 24px; text-align: center; width: 100%; box-shadow: var(--shadow); }
+  .topic-box .label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 8px; }
+  .topic-box .topic { font-size: 18px; font-weight: 700; line-height: 1.5; }
+  .sub { font-size: 15px; color: var(--text2); text-align: center; max-width: 480px; }
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 480px; }
+  .role-card { background: var(--card); border: 2px solid var(--border); border-radius: var(--radius); padding: 28px 20px; text-align: center; cursor: pointer; transition: all .3s ease; box-shadow: var(--shadow); }
+  .role-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--teacher); }
+  .role-card .icon { width: 48px; height: 48px; margin-bottom: 12px; fill: var(--text2); transition: fill .3s; }
+  .role-card:hover .icon { fill: var(--teacher); }
+  .role-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .role-card p { font-size: 13px; color: var(--text2); }
+
+  .assign { text-align: center; padding: 60px 20px; }
+  .spinner { width: 56px; height: 56px; border: 5px solid var(--border); border-top-color: var(--teacher); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
+  .badge.pro { background: var(--pro-light); color: var(--pro); }
+  .badge.con { background: var(--con-light); color: var(--con); }
+
+  .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .tips { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 0 12px 12px 0; font-size: 14px; }
+  .tips ul { margin: 8px 0 0 18px; color: #92400e; }
+  .tips li { margin-bottom: 6px; }
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text2); }
+  .input-group input, .input-group textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; resize: vertical; transition: border-color .2s; font-family: inherit; }
+  .input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--teacher); }
+  .input-group textarea { min-height: 100px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; border-radius: 12px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: all .2s; width: 100%; }
+  .btn-primary { background: var(--teacher); color: #fff; box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
+  .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text2); }
+  .btn-outline:hover { border-color: var(--teacher); color: var(--teacher); }
+  .btn-danger { background: #ef4444; color: #fff; }
+
+  .success { text-align: center; padding: 40px 20px; }
+  .success .check { width: 64px; height: 64px; fill: #10b981; margin-bottom: 16px; }
+  .success h2 { font-size: 22px; margin-bottom: 8px; }
+  .success p { color: var(--text2); margin-bottom: 24px; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .topbar h2 { font-size: 20px; }
+  .back { font-size: 14px; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 4px; background: none; border: none; }
+  .back:hover { color: var(--teacher); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat { background: var(--card); border-radius: 12px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+  .stat .num { font-size: 28px; font-weight: 800; }
+  .stat.pro .num { color: var(--pro); }
+  .stat.con .num { color: var(--con); }
+  .stat.total .num { color: var(--teacher); }
+  .actions { display: flex; gap: 10px; margin-bottom: 20px; }
+  .actions .btn { width: auto; flex: 1; font-size: 14px; padding: 10px 16px; }
+  .debate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .col h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+  .col.pro h3 { color: var(--pro); border-color: var(--pro); }
+  .col.con h3 { color: var(--con); border-color: var(--con); }
+  .entry { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 12px; font-size: 14px; }
+  .entry .meta { font-size: 11px; color: var(--text2); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .entry .content { color: var(--text); line-height: 1.5; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-top: 8px; margin-right: 6px; }
+  .tag-core { background: var(--pro-light); color: var(--pro); }
+  .tag-evi { background: #dcfce7; color: #166534; }
+  .tag-counter { background: var(--con-light); color: var(--con); }
+  .empty { text-align: center; padding: 24px; color: var(--text2); font-size: 13px; }
+  .analysis { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-top: 16px; font-size: 14px; }
+  .analysis h4 { color: #166534; margin-bottom: 8px; }
+  .wordcloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .wtag { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: var(--bg); color: var(--text2); }
+  .wtag.hot { background: var(--teacher-light); color: var(--teacher); }
+
+  @media (max-width: 600px) {
+    .role-grid { grid-template-columns: 1fr; }
+    .debate-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 首页 -->
+  <div id="page-home" class="landing">
+    <div class="topic-box">
+      <div class="label">课堂辩论赛</div>
+      <div class="topic">降低"社会物流总费用 / GDP 比率"<br>是否等同于物流效率的实质提升？</div>
+    </div>
+    <div class="sub">扫码进入后，系统将随机分配您为正方或反方。请搜集证据，输入论点，参与课堂辩论。</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="enterStudent()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 13.09l-5.5-3.03L12 10l5.5 3.06L12 16.09zM5 13.62v2L12 19l7-3.38v-2L12 17l-7-3.38z"/></svg>
+        <h3>我是学生</h3>
+        <p>扫码进入，随机分配阵营，提交论点</p>
+      </div>
+      <div class="role-card" onclick="enterTeacher()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M12 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/></svg>
+        <h3>我是教师</h3>
+        <p>查看汇总、描述性分析与课堂汇报</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学生：随机分配 -->
+  <div id="page-assign" class="hidden">
+    <div class="assign">
+      <div class="spinner"></div>
+      <h2>正在随机分配阵营...</h2>
+      <p>请稍候，系统正在为您抽取正方或反方</p>
+    </div>
+  </div>
+
+  <!-- 学生：填写论点 -->
+  <div id="page-form" class="hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        返回
+      </button>
+    </div>
+    <div id="form-badge"></div>
+    <div class="card">
+      <div class="card-title">💡 论点提示（供参考）</div>
+      <div class="tips" id="tips-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📝 提交您的论点</div>
+      <div class="input-group">
+        <label>核心论点（一句话概括您的立场）</label>
+        <input type="text" id="inp-core" placeholder="例如：降低该比率直接反映了单位GDP所需物流成本的下降...">
+      </div>
+      <div class="input-group">
+        <label>论据支撑（数据、案例、理论依据）</label>
+        <textarea id="inp-evidence" placeholder="请填写具体的数据来源、典型案例或学术观点..."></textarea>
+      </div>
+      <div class="input-group">
+        <label>反驳对方可能观点（预设反方/正方攻击点）</label>
+        <textarea id="inp-counter" placeholder="例如：反方可能会说产业结构差异导致比率不可比..."></textarea>
+      </div>
+      <div class="input-group">
+        <label>您的姓名（可选，用于课堂点名）</label>
+        <input type="text" id="inp-name" placeholder="输入姓名">
+      </div>
+      <button class="btn btn-primary" onclick="submitForm()">提交论点</button>
+    </div>
+  </div>
+
+  <!-- 学生：提交成功 -->
+  <div id="page-success" class="hidden">
+    <div class="success">
+      <svg class="check" viewBox="0 0 24 24" width="64" height="64" style="fill:#10b981;margin-bottom:16px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <h2>提交成功！</h2>
+      <p>您的论点已录入系统，教师端将实时汇总。</p>
+      <button class="btn btn-outline" style="max-width:200px;margin-top:16px" onclick="goHome()">返回首页</button>
+    </div>
+  </div>
+
+  <!-- 教师：控制台 -->
+  <div id="page-teacher" class="hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        返回
+      </button>
+      <h2>教师控制台</h2>
+    </div>
+    <div class="stats">
+      <div class="stat pro"><div class="num" id="t-pro">0</div><div class="lbl">正方人数</div></div>
+      <div class="stat con"><div class="num" id="t-con">0</div><div class="lbl">反方人数</div></div>
+      <div class="stat total"><div class="num" id="t-total">0</div><div class="lbl">总提交数</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="refreshData()">刷新数据</button>
+      <button class="btn btn-outline" onclick="copyReport()">复制汇报文本</button>
+      <button class="btn btn-danger" onclick="clearAll()">清空数据</button>
+    </div>
+    <div class="debate-grid">
+      <div class="col pro">
+        <h3>🛡️ 正方：比率下降 = 效率实质提升</h3>
+        <div id="list-pro"><div class="empty">暂无正方提交</div></div>
+      </div>
+      <div class="col con">
+        <h3>⚔️ 反方：比率下降 ≠ 效率实质提升</h3>
+        <div id="list-con"><div class="empty">暂无反方提交</div></div>
+      </div>
+    </div>
+    <div class="analysis">
+      <h4>📊 实时描述性分析</h4>
+      <div id="analysis-box">暂无数据，学生提交后将自动生成分析。</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== 全局变量 ==========
+var STORAGE_KEY = "debate_logistics_2026";
+
+var TIPS_PRO = "<strong>正方论点方向提示：</strong><ul>" +
+  "<li><b>指标本身意义：</b>社会物流总费用/GDP 是国际通用的物流效率衡量指标，比率下降直接说明创造同等GDP所需物流成本减少。</li>" +
+  "<li><b>中国数据支撑：</b>我国该比率从2012年的18%降至2023年的14.4%，同期物流基础设施大幅改善，快递时效缩短。</li>" +
+  "<li><b>国际对标：</b>发达国家该比率普遍较低（美国约8%），降低比率是追赶先进物流水平的体现。</li>" +
+  "<li><b>技术进步：</b>数字化、多式联运、共同配送等技术应用降低了空驶率和库存成本，是效率提升的实质表现。</li>" +
+  "<li><b>反驳预设：</b>产业结构差异确实存在，但比率下降的趋势本身仍反映物流部门内部效率在改善。</li>" +
+  "</ul>";
+
+var TIPS_CON = "<strong>反方论点方向提示：</strong><ul>" +
+  "<li><b>产业结构偏差：</b>中国制造业占比高、大宗物流需求大，GDP分母结构与美国服务业为主不同，比率不可直接比较。</li>" +
+  "<li><b>物流费用绝对值：</b>比率下降可能是因为GDP增长更快，而非物流成本真正降低；物流总费用绝对额仍在上升。</li>" +
+  "<li><b>统计口径问题：</b>“社会物流总费用”包含运输、保管、管理费用，其中库存保管费用高反映的是周转慢，而非效率高。</li>" +
+  "<li><b>质量与成本转移：</b>比率下降可能通过压低物流从业者收入、降低服务标准实现，并非“效率”而是“成本转嫁”。</li>" +
+  "<li><b>实质指标缺失：</b>真正反映效率的是吨公里成本、库存周转天数、准时交付率等运营指标，而非宏观比率。</li>" +
+  "<li><b>反驳预设：</b>正方引用比率下降时，应追问“下降的动力来自技术进步还是统计口径变化/GDP结构变化？”</li>" +
+  "</ul>";
+
+// ========== 页面切换 ==========
+function goHome() {
+  var pages = document.querySelectorAll(".wrap > div");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].classList.add("hidden");
+  }
+  document.getElementById("page-home").classList.remove("hidden");
+}
+
+function showPage(id) {
+  var pages = document.querySelectorAll(".wrap > div");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].classList.add("hidden");
+  }
+  document.getElementById(id).classList.remove("hidden");
+}
+
+// ========== 学生端 ==========
+function enterStudent() {
+  showPage("page-assign");
+  setTimeout(function() {
+    var side = Math.random() > 0.5 ? "pro" : "con";
+    var id = "stu_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6);
+    localStorage.setItem("debate_side", side);
+    localStorage.setItem("debate_id", id);
+    showForm(side);
+  }, 1500);
+}
+
+function showForm(side) {
+  showPage("page-form");
+  var badge = document.getElementById("form-badge");
+  var tips = document.getElementById("tips-box");
+  if (side === "pro") {
+    badge.innerHTML = '<div class="badge pro">🛡️ 正方：比率下降等同于效率实质提升</div>';
+    tips.innerHTML = TIPS_PRO;
+  } else {
+    badge.innerHTML = '<div class="badge con">⚔️ 反方：比率下降不等同于效率实质提升</div>';
+    tips.innerHTML = TIPS_CON;
+  }
+}
+
+function submitForm() {
+  var core = document.getElementById("inp-core").value.trim();
+  var evidence = document.getElementById("inp-evidence").value.trim();
+  var counter = document.getElementById("inp-counter").value.trim();
+  var name = document.getElementById("inp-name").value.trim() || "匿名同学";
+  if (!core && !evidence) {
+    alert("请至少填写核心论点或论据支撑");
+    return;
+  }
+  var side = localStorage.getItem("debate_side") || "pro";
+  var id = localStorage.getItem("debate_id") || ("stu_" + Date.now());
+  var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  data.push({ id: id, side: side, name: name, core: core, evidence: evidence, counter: counter, time: new Date().toLocaleString("zh-CN") });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showPage("page-success");
+}
+
+// ========== 教师端 ==========
+function enterTeacher() {
+  showPage("page-teacher");
+  renderTeacher();
+}
+
+function refreshData() {
+  renderTeacher();
+}
+
+function clearAll() {
+  if (confirm("确定要清空所有数据吗？此操作不可恢复。")) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderTeacher();
+  }
+}
+
+function copyReport() {
+  var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  var proList = data.filter(function(d) { return d.side === "pro"; });
+  var conList = data.filter(function(d) { return d.side === "con"; });
+  var text = "课堂辩论赛汇报\n辩题：降低社会物流总费用/GDP比率是否等同于物流效率的实质提升？\n\n";
+  text += "【统计】总提交：" + data.length + "人，正方：" + proList.length + "人，反方：" + conList.length + "人\n\n";
+  text += "【正方观点】\n";
+  proList.forEach(function(item, i) {
+    text += (i+1) + ". " + item.name + "\n";
+    if (item.core) text += "   核心论点：" + item.core + "\n";
+    if (item.evidence) text += "   论据：" + item.evidence + "\n";
+    if (item.counter) text += "   反驳：" + item.counter + "\n";
+    text += "\n";
+  });
+  text += "【反方观点】\n";
+  conList.forEach(function(item, i) {
+    text += (i+1) + ". " + item.name + "\n";
+    if (item.core) text += "   核心论点：" + item.core + "\n";
+    if (item.evidence) text += "   论据：" + item.evidence + "\n";
+    if (item.counter) text += "   反驳：" + item.counter + "\n";
+    text += "\n";
+  });
+  navigator.clipboard.writeText(text).then(function() {
+    alert("汇报文本已复制到剪贴板");
+  });
+}
+
+function renderTeacher() {
+  var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  var proList = data.filter(function(d) { return d.side === "pro"; });
+  var conList = data.filter(function(d) { return d.side === "con"; });
+  document.getElementById("t-pro").textContent = proList.length;
+  document.getElementById("t-con").textContent = conList.length;
+  document.getElementById("t-total").textContent = data.length;
+
+  var proEl = document.getElementById("list-pro");
+  var conEl = document.getElementById("list-con");
+
+  if (proList.length === 0) {
+    proEl.innerHTML = '<div class="empty">暂无正方提交</div>';
+  } else {
+    proEl.innerHTML = proList.map(function(item, idx) {
+      return '<div class="entry">' +
+        '<div class="meta"><span>#' + (idx+1) + ' ' + item.name + '</span><span>' + item.time + '</span></div>' +
+        (item.core ? '<div class="content"><b>核心论点：</b>' + item.core + '</div>' : '') +
+        (item.evidence ? '<div class="content" style="margin-top:6px"><b>论据：</b>' + item.evidence + '</div>' : '') +
+        (item.counter ? '<div class="content" style="margin-top:6px"><b>反驳：</b>' + item.counter + '</div>' : '') +
+        '<div style="margin-top:8px">' +
+        (item.core ? '<span class="tag tag-core">核心论点</span>' : '') +
+        (item.evidence ? '<span class="tag tag-evi">论据</span>' : '') +
+        (item.counter ? '<span class="tag tag-counter">反驳</span>' : '') +
+        '</div></div>';
+    }).join("");
+  }
+
+  if (conList.length === 0) {
+    conEl.innerHTML = '<div class="empty">暂无反方提交</div>';
+  } else {
+    conEl.innerHTML = conList.map(function(item, idx) {
+      return '<div class="entry">' +
+        '<div class="meta"><span>#' + (idx+1) + ' ' + item.name + '</span><span>' + item.time + '</span></div>' +
+        (item.core ? '<div class="content"><b>核心论点：</b>' + item.core + '</div>' : '') +
+        (item.evidence ? '<div class="content" style="margin-top:6px"><b>论据：</b>' + item.evidence + '</div>' : '') +
+        (item.counter ? '<div class="content" style="margin-top:6px"><b>反驳：</b>' + item.counter + '</div>' : '') +
+        '<div style="margin-top:8px">' +
+        (item.core ? '<span class="tag tag-core">核心论点</span>' : '') +
+        (item.evidence ? '<span class="tag tag-evi">论据</span>' : '') +
+        (item.counter ? '<span class="tag tag-counter">反驳</span>' : '') +
+        '</div></div>';
+    }).join("");
+  }
+
+  // 描述性分析
+  var allText = data.map(function(d) { return [d.core, d.evidence, d.counter].join(" "); }).join(" ");
+  var keywords = extractKeywords(allText);
+  var proCore = proList.filter(function(d) { return d.core; }).length;
+  var proEvi = proList.filter(function(d) { return d.evidence; }).length;
+  var proCounter = proList.filter(function(d) { return d.counter; }).length;
+  var conCore = conList.filter(function(d) { return d.core; }).length;
+  var conEvi = conList.filter(function(d) { return d.evidence; }).length;
+  var conCounter = conList.filter(function(d) { return d.counter; }).length;
+  var completeness = data.length ? Math.round(((proCore+conCore)+(proEvi+conEvi)+(proCounter+conCounter))/(data.length*3)*100) : 0;
+
+  var html = "<ul>";
+  html += "<li><b>参与度：</b>共 " + data.length + " 人提交，正方 " + proList.length + " 人，反方 " + conList.length + " 人。";
+  if (data.length > 0) {
+    html += " 正方占比 " + Math.round(proList.length/data.length*100) + "%，反方占比 " + Math.round(conList.length/data.length*100) + "%。</li>";
+  } else {
+    html += "</li>";
+  }
+  html += "<li><b>内容完整度：</b>整体填写完整度 " + completeness + "%。正方填写核心论点/论据/反驳的比例分别为 " + (proList.length ? Math.round(proCore/proList.length*100) : 0) + "% / " + (proList.length ? Math.round(proEvi/proList.length*100) : 0) + "% / " + (proList.length ? Math.round(proCounter/proList.length*100) : 0) + "%；反方为 " + (conList.length ? Math.round(conCore/conList.length*100) : 0) + "% / " + (conList.length ? Math.round(conEvi/conList.length*100) : 0) + "% / " + (conList.length ? Math.round(conCounter/conList.length*100) : 0) + "%。</li>";
+  if (keywords.length > 0) {
+    html += "<li><b>高频关键词：</b>学生论证中反复出现的概念如下，可据此引导课堂讨论：</li></ul>";
+    html += '<div class="wordcloud">' + keywords.map(function(k) {
+      return '<span class="wtag ' + (k.count > 1 ? "hot" : "") + '">' + k.word + " (" + k.count + ")</span>";
+    }).join("") + "</div>";
+  } else {
+    html += "<li>暂无足够数据生成关键词云。</li></ul>";
+  }
+  document.getElementById("analysis-box").innerHTML = html;
+}
+
+function extractKeywords(text) {
+  if (!text) return [];
+  var stopWords = ["的","了","是","在","我","有","和","就","不","人","都","一","一个","上","也","很","到","说","要","去","你","会","着","没有","看","好","自己","这","那","为","与","及","等","对","可以","但","而","因为","所以","例如","比如","可能","是否","如果","我们","它们","以及","但是","因此","进行","通过","需要","能够","应该","不能","使用","采用","由于","随着","关于","对于","基于","作为","等等","之一","主要","一般","通常","往往","不断","逐步","明显","显著","有效","合理","重要","关键","核心","直接","实质","真正","实际","宏观","微观","国际","国内","中国","美国","我国","物流","运输","仓储","库存","成本","费用","比率","比例","指标","数据","统计","分析","研究","系统","过程","结果","方式","方法","措施","策略","机制","体制","结构","产业","企业","行业","市场","经济","社会","国家","政府","政策","水平","标准","质量","效率","效益","能力","程度","趋势","变化","差异","问题","原因","影响","作用","意义","目的","目标","方向","思路","观点","看法","意见","建议","方案","计划","项目","工作","活动","业务","服务","功能","模式","形式","类型","种类","部分","方面","环节","阶段","时期","时间","年度","年份","期间","当前","目前","现在","未来","过去","历史","传统","现代","新型","创新","改革","发展","增长","下降","降低","减少","提高","提升","改善","优化","调整","转变","转型","升级","进步","前进","深入","全面","整体","局部","内部","外部","直接","间接","表面","本质","现象","原因","结果","前提","条件","基础","保障","支持","促进","推动","带动","引领","实现","完成","达成","达到","超过","低于","高于","等于","相当于","等同于","不等同于","是否","能否","可以","不可","可能","也许","大概","大约","左右","上下","以内","以上","以下","之间","之外","之内","其中","其余","其他","另外","此外","而且","并且","同时","同样","相反","相对","绝对","客观","主观","真实","虚假","准确","错误","正确","合理","合法","合规","规范","统一","多样","复杂","简单","容易","困难","程度","层次","等级","类别","性质","特点","特征","特色","优势","劣势","长处","短处","优点","缺点","利弊","好坏","优劣","高低","大小","多少","长短","快慢","早晚","先后","前后","内外","表里","全局","细节","总体","个体","集体","个人","大家","双方","两方","正方","反方","一方","二者","两者","对比","比较","占比","比重","份额","成分","构成","组成","形成","产生","出现","存在","发生","发展","演变","演化","变动","波动","稳定","平稳","平衡","均衡","失衡","失调","协调","协同","协作","合作","竞争","对抗","冲突","矛盾","统一","一致","分歧","差别","区别","区分","识别","认定","确认","确定","肯定","否定","质疑","怀疑","相信","信任","依赖","依靠","依附","独立","自主","自动","自觉","自发","被动","主动","积极","消极","正面","负面","乐观","悲观","赞成","反对","抵制","拥护","排斥","接受","拒绝","同意","认可","否认","承认","知道","了解","理解","明白","清楚","清晰","模糊","糊涂","迷惑","困惑","疑问","难题","课题","话题","主题","议题","题目","标题","名称","名字","称呼","叫法","说法","提法","概念","观念","理念","思想","意识","认识","认知","知识","常识","学识","学术","理论","实践","现实","事实","真相","假象","表象","要害","症结","根源","来源","出处","起源","起因","缘由","缘故","理由","借口","根据","依据","根基","根本","基本","环境","背景","情境","场景","场合","场所","地点","位置","方向","方位","角度","立场","态度","主张","主义","宗旨","意图","动机","动力","动因","诱因","刺激","反应","反馈","回应","回答","答复","回复","应对","对策","办法","途径","渠道","路径","路线","道路","轨道","轨迹","痕迹","踪迹","踪影","影子","形象","形态","状态","状况","情形","情况","形势","局势","局面","格局","布局","架构","框架","体系","制度","范式","样式","格式","规矩","规则","规律","定律","定理","原则","原理","道理","真理","真谛","精髓","精华","精品","成品","产品","产物","成果","成效","效果","利益","利润","收益","收入","产出","产量","产值","价值","价格","价钱","金额","数额","数量","数目","数字","数值","资料","材料","素材","证据","证明","凭证","凭据","字据","票据","单据","账单","账户","账号","户头","头寸","款项","资金","资本","资产","财产","财富","资源","能源","力量","力气","能耐","本领","本事","技能","技术","技巧","技艺","手艺","手法","手段","手腕","举措","举动","行动","行为","作为","做法","表示","表明","显示","展示","展现","暴露","揭露","揭示","揭开","打开","开启","开放","开拓","开辟","开创","创造","创建","创立","建立","建设","建造","打造","制造","制作","制订","制定","拟定","拟订","起草","草拟","撰写","写作","创作","塑造","铸造","铸就","到达","抵达","来到","回来","回去","往返","来回","往来","来往","交流","交换","互换","调换","更换","替换","替代","代替","取代","顶替","更新","革新","变革","变更","改善","改进","改良","改造","改建","重建","修复","恢复","康复","痊愈","愈合","合成","生成","显现","显露","涌现","呈现"];
+  var stopSet = {};
+  for (var i = 0; i < stopWords.length; i++) {
+    stopSet[stopWords[i]] = true;
+  }
+  var words = text.toLowerCase().split(/[\s\n\r\t，。！？；：""''（）【】《》、,.!?;:\"'()\[\]]/);
+  var freq = {};
+  for (var j = 0; j < words.length; j++) {
+    var w = words[j];
+    if (w.length >= 2 && !stopSet[w]) {
+      freq[w] = (freq[w] || 0) + 1;
+    }
+  }
+  var entries = [];
+  for (var key in freq) {
+    entries.push({ word: key, count: freq[key] });
+  }
+  entries.sort(function(a, b) { return b.count - a.count; });
+  return entries.slice(0, 15);
+}
+</script>
+</body>
+</html>
